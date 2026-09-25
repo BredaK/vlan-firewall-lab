@@ -1,0 +1,56 @@
+! GW-Router Configuration
+! Cisco 2911 Router
+! Role: Inter-VLAN Router + ACL Firewall Gateway
+! ================================================
+
+hostname GW-Router
+
+! --- WAN Interface ---
+interface GigabitEthernet0/2
+ ip address 203.0.113.1 255.255.255.252
+ no shutdown
+
+! --- LAN Trunk Interface ---
+interface GigabitEthernet0/0
+ no shutdown
+
+! --- VLAN 10 Subinterface - Management ---
+interface GigabitEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+ ip access-group MGMT-POLICY in
+
+! --- VLAN 20 Subinterface - Staff ---
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+ ip access-group STAFF-POLICY in
+
+! --- VLAN 30 Subinterface - Servers ---
+interface GigabitEthernet0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.1 255.255.255.0
+
+! --- VLAN 40 Subinterface - Guest ---
+interface GigabitEthernet0/0.40
+ encapsulation dot1Q 40
+ ip address 192.168.40.1 255.255.255.0
+ ip access-group GUEST-POLICY in
+
+! --- Default Route ---
+ip route 0.0.0.0 0.0.0.0 203.0.113.2
+
+! --- ACL: Guest Policy ---
+ip access-list extended GUEST-POLICY
+ deny ip 192.168.40.0 0.0.0.255 192.168.10.0 0.0.0.255
+ deny ip 192.168.40.0 0.0.0.255 192.168.20.0 0.0.0.255
+ deny ip 192.168.40.0 0.0.0.255 192.168.30.0 0.0.0.255
+ permit ip any any
+
+! --- ACL: Staff Policy ---
+ip access-list extended STAFF-POLICY
+ deny ip 192.168.20.0 0.0.0.255 192.168.10.0 0.0.0.255
+ permit ip 192.168.20.0 0.0.0.255 192.168.30.0 0.0.0.255
+ permit ip any any
+
+end

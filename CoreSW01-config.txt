@@ -1,0 +1,44 @@
+! CoreSW01 Configuration
+! Cisco 2960 Switch
+! Role: Access Layer Switch — VLAN Segmentation
+! ================================================
+
+hostname CoreSW01
+
+! --- VLAN Definitions ---
+vlan 10
+ name Management
+vlan 20
+ name Staff
+vlan 30
+ name Servers
+vlan 40
+ name Guest
+
+! --- Access Ports ---
+interface FastEthernet0/1
+ switchport mode access
+ switchport access vlan 10
+ description PC-MGMT
+
+interface FastEthernet0/2
+ switchport mode access
+ switchport access vlan 20
+ description PC-STAFF
+
+interface FastEthernet0/3
+ switchport mode access
+ switchport access vlan 30
+ description PC-SRV
+
+interface FastEthernet0/4
+ switchport mode access
+ switchport access vlan 40
+ description PC-GUEST
+
+! --- Trunk Port to Router ---
+interface GigabitEthernet0/1
+ switchport mode trunk
+ description Trunk-to-GW-Router
+
+end
